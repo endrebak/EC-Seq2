@@ -29,3 +29,6 @@ class Gene(models.Model):
     ovsy_p_value = models.FloatField()
     ovsy_adj_p_val = models.FloatField()
     ovsy_b = models.FloatField()
+
+    def __str__(self):
+        return str(self.__dict__)
