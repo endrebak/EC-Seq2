@@ -2,6 +2,6 @@
 
 <ul>
     {% for gene in gene_list %}
-      <li>{{ gene.name }}</li>
+    <li><a href=" {{ gene.get_absolute_url }} "{{ gene.name }}>{{ gene.name }}</a></li>
     {% endfor %}
 </ul>

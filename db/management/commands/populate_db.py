@@ -18,12 +18,14 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         f = options["toptable_file"]
-        df = pd.read_csv(f, sep=" ", nrows=5)
+        df = pd.read_csv(f, sep=" ")
         df.columns = ["name"] + list(df.columns)[1:]
 
         Gene.objects.all().delete()
 
-        for _, gene in df.iterrows():
+        for i, (_, gene )in enumerate(df.iterrows()):
+
+            # if i % 10000 ==
 
             g = Gene()
 
