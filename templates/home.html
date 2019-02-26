@@ -1,7 +1,12 @@
-<h1>ECSeq home page</h1>
+
+{% extends "base.html" %}
+
+{% block content %}
 
 <ul>
     {% for gene in gene_list %}
     <li><a href=" {{ gene.get_absolute_url }} "{{ gene.name }}>{{ gene.name }}</a></li>
     {% endfor %}
 </ul>
+
+{% endblock content %}

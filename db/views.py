@@ -1,8 +1,12 @@
 from django.views.generic import ListView, DetailView
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_list_or_404
 from .models import Gene
 
 import random
+
+from urllib.request import urlopen
+from urllib.parse import quote_plus
+import json
 
 class HomePageView(ListView):
     model = Gene
@@ -15,10 +19,44 @@ class HomePageView(ListView):
 
 from django.shortcuts import render
 
-class GeneDetailView(DetailView):
-    model = Gene
-    template_name = "gene_detail.html"
+def search_mygene(term):
 
-    def get_object(self):
-        gene = get_object_or_404(Gene, name__iexact=self.kwargs['name'])
-        return gene
+    url = "https://mygene.info/v3/query?q={name}&species=rat".format(name=quote_plus(term))
+    response = urlopen(url).read()
+    return json.loads(response)
+
+class GeneListView(ListView):
+    model = Gene
+    template_name = "gene_list.html"
+
+    def get_queryset(self):
+
+        name = self.kwargs.get("name") or self.request.GET.get("name").strip()
+
+        result = Gene.objects.filter(name__icontains=name)
+
+        if not len(result):
+
+
+            symbols = []
+            result = search_mygene(name)
+            for hit in result["hits"]:
+                symbols.append(hit["symbol"])
+
+            result = Gene.objects.filter(name__in=symbols)
+
+        return result
+
+    def get_context_data(self, **kwargs):
+
+        data = super().get_context_data(**kwargs)
+        object_list = data["object_list"]
+
+        if len(object_list) == 1:
+            name = object_list[0].name
+            result = search_mygene(name)
+            first_hit = result["hits"][0]
+            data["gene_description"] = first_hit["name"]
+            print(data)
+
+        return data
