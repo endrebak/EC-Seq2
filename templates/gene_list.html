@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if object_list.count == 1 %}
+{% for object in object_list %}
+<div class="row">
+    <div class="span12">
+        <h1>{{ object.name }}: {{gene_description}}</h1>
+        <!-- <p>Gene symbol: {{object.symbol}} ({{ object.name }})</p> -->
+
+        <p>EC II vs. Deep FDR: {% if object.eciivsd_adj_p_val <= 0.05 %} <b>{{object.eciivsd_adj_p_val}}</b> {% else %} {{object.eciivsd_adj_p_val}} {% endif %}</p>
+        <p>Med vs. Lat FDR:  {% if object.mecvslec_adj_p_val <= 0.05 %} <b>{{object.mecvslec_adj_p_val}}</b> {% else %} {{object.mecvslec_adj_p_val}} {% endif %}</p>
+        <p>P02/P09 vs P23/P45 FDR: {% if object.ovsy_adj_p_val <= 0.05 %} <b>{{object.ovsy_adj_p_val}}</b> {% else %} {{object.ovsy_adj_p_val}} {% endif %}</p>
+
+        {% load static %}
+        <img src="{% static "img/" %}{{object.name}}.png" alt="{{object.name}}", height="525", width="700">
+        <p>
+        <a href="http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=rn6&hubUrl=http://havpryd.medisin.ntnu.no/ECSeq/hub.txt&position={{object.name}}">View {{object.name}} in the UCSC genome browser.</a>
+        </p>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+{% for object in object_list %}
+<li><a href="/gene/{{object.name}}/">{{ object.name }}</a></li>
+{% endfor %}
+
+{% endif %}
+
+{% endblock content %}
